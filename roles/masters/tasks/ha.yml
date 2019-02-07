@@ -1,0 +1,40 @@
+---
+
+- name: get config files from primary master
+  delegate_to: "{{ groups.k8s_masters[0] }}"
+  slurp:
+    src: "{{ item }}"
+  with_items:
+    - '/etc/kubernetes/pki/ca.crt'
+    - '/etc/kubernetes/pki/ca.key'
+    - '/etc/kubernetes/pki/etcd/ca.crt'
+    - '/etc/kubernetes/pki/etcd/ca.key'
+    - '/etc/kubernetes/pki/sa.key'
+    - '/etc/kubernetes/pki/sa.pub'
+    - '/etc/kubernetes/pki/front-proxy-ca.crt'
+    - '/etc/kubernetes/pki/front-proxy-ca.key'
+    - '/etc/kubernetes/admin.conf'
+  register: master_certs_configs_register
+
+- name: copy config files to all masters
+  copy:
+    content: '{{ item.content | b64decode }}'
+    dest: "{{ item.source }}"
+  with_items: "{{ master_certs_configs_register.results }}"
+
+- name: check node is already in cluster
+  delegate_to: "{{ groups.masters[0] }}"
+  command: "kubectl get nodes -n kube-system --kubeconfig /etc/kubernetes/admin.conf -o name"
+  register: get_node_register
+  changed_when: false
+
+- name: get join command from master
+  delegate_to: "{{ groups.masters[0] }}"
+  command: "kubeadm token create --print-join-command"
+  changed_when: false
+  when: ( 'node/' + ansible_nodename ) not in get_node_register.stdout_lines
+  register: join_command_register
+
+- name: join master node into cluster
+  command: "{{ join_command_register.stdout }} --experimental-control-plane"
+  when: ( 'node/' + ansible_nodename ) not in get_node_register.stdout_lines

@@ -1,0 +1,12 @@
+---
+# defaults file for masters
+LOAD_BALANCER_DNS: "k8s.sistemafieg.org.br"
+LOAD_BALANCER_PORT: 443
+
+EXTRA_CERT_SANS:
+  - "{{ ansible_hostname }}"
+  - "{{ ansible_nodename }}"
+  - "{{ ansible_host }}"
+
+KUBERNETES_VERSION: "1.13.3"
+KUBERNETES_YUM_ARCH: x86_64

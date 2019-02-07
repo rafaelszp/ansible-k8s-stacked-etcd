@@ -1,0 +1,19 @@
+---
+# tasks file for masters
+
+- name: check node is already in cluster
+  delegate_to: "{{ groups.masters[0] }}"
+  command: "kubectl get nodes -n kube-system --kubeconfig /etc/kubernetes/admin.conf -o name"
+  register: get_node_register
+  changed_when: false
+
+- name: Install master
+  include: install.yml
+  when: ( 'node/' + ansible_nodename ) not in get_node_register.stdout_lines
+
+- name: include master ha tasks
+  include: ha.yml
+  when: ( groups.masters | length > 1 ) and inventory_hostname != groups.masters[0]
+
+
+

@@ -1,0 +1,58 @@
+---
+- name: Prepare centos
+  import_tasks: pre-centos.yml
+    
+- name: Installing kubeadm
+  package:
+    name: 
+      - kubeadm-{{KUBERNETES_VERSION}}
+      - kubelet-{{KUBERNETES_VERSION}}
+      - kubectl-{{KUBERNETES_VERSION}}
+    state: present
+    
+- name: "Checking if /etc/kubernetes/kubeadm exists"
+  file:
+    path: /etc/kubernetes/kubeadm
+    state: directory
+
+- name: Setup cgroups
+  copy:
+    src: 10-kubeadm.conf
+    dest: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+  
+- name: Setup kubeadm-config.yaml
+  template:
+    src: kubedm-config.yaml.j2
+    dest: /etc/kubernetes/kubeadm/kubeadm-config.yaml
+
+- name: Initializing kubernetes cluster with kubeadm init
+  command: kubeadm init --config=/etc/kubernetes/kubeadm/kubeadm-config.yaml
+
+- name: Reload systemd unit if args were changed.
+  systemd:
+    daemon_reload: true
+
+- name: Restart Kubelet
+  service: 
+    name: kubelet
+    state: restarted
+    enabled: yes
+
+- name: include network plugin tasks
+  include_tasks: network_plugin.yml
+  when: inventory_hostname == groups.masters[0]
+
+- name: ensure .kube folder exists on first master
+  file:
+    path: /root/.kube
+    state: directory
+  when:
+  - inventory_hostname == groups.masters[0]
+
+- name: ensure kube config exists on first master
+  copy:
+    src: "/etc/kubernetes/admin.conf"
+    dest: /root/.kube/config
+    remote_src: yes
+  when:
+  - inventory_hostname == groups.masters[0]

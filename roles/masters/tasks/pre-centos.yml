@@ -1,0 +1,61 @@
+---
+
+- name: "Add Kubernetes repository and install gpg key (CentOS)"
+  yum_repository:
+    name: kubernetes
+    description: Kubernetes repository
+    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-{{ KUBERNETES_YUM_ARCH }}
+    gpgcheck: yes
+    enabled: yes
+    repo_gpgcheck: yes
+    gpgkey:
+      - https://packages.cloud.google.com/yum/doc/yum-key.gpg
+      - https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+
+- name: Add Kubernetes GPG keys.
+  rpm_key:
+    key: "{{ item }}"
+    state: present
+  register: kubernetes_rpm_key
+  until: kubernetes_rpm_key is success
+  retries: 2
+  with_items:
+    - https://packages.cloud.google.com/yum/doc/yum-key.gpg
+    - https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+
+- name: Make cache if Kubernetes GPG key changed.
+  command: "yum -q makecache -y --disablerepo='*' --enablerepo='kubernetes'"
+  when: kubernetes_rpm_key is changed
+  args:
+    warn: false
+
+- name: "Disable SELinux (CentOS)"
+  selinux:
+    state: disabled
+
+- name: "ensure br_netfilter kernel modul is loaded"
+  modprobe:
+    name: br_netfilter
+    state: present
+
+- name: check /proc/sys/net/bridge/bridge-nf-call-iptables
+  command: cat /proc/sys/net/bridge/bridge-nf-call-iptables
+  register: bridge_nf_register
+  changed_when: false
+
+- debug: var=bridge_nf_register
+
+- name: "ensure /proc/sys/net/bridge/bridge-nf-call-iptables is set to 1"
+  shell: "echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables"
+  when: bridge_nf_register.stdout == '0'
+
+- name: "Disable swapoff permanently"
+  replace:
+    path: /etc/fstab
+    regexp: '^(\s*)([^#\n]+\s+)(\w+\s+)swap(\s+.*)$'
+    replace: '#\1\2\3swap\4'
+    backup: yes
+
+- name: "Disable swap"
+  command: swapoff -a
+  when: ansible_swaptotal_mb > 0
