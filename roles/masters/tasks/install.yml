@@ -1,15 +1,4 @@
----
-- name: Prepare centos
-  import_tasks: pre-centos.yml
-    
-- name: Installing kubeadm
-  package:
-    name: 
-      - kubeadm-{{KUBERNETES_VERSION}}
-      - kubelet-{{KUBERNETES_VERSION}}
-      - kubectl-{{KUBERNETES_VERSION}}
-    state: present
-    
+---  
 - name: "Checking if /etc/kubernetes/kubeadm exists"
   file:
     path: /etc/kubernetes/kubeadm
@@ -38,10 +27,6 @@
     state: restarted
     enabled: yes
 
-- name: include network plugin tasks
-  include_tasks: network_plugin.yml
-  when: inventory_hostname == groups.masters[0]
-
 - name: ensure .kube folder exists on first master
   file:
     path: /root/.kube
@@ -56,3 +41,8 @@
     remote_src: yes
   when:
   - inventory_hostname == groups.masters[0]
+
+- name: include network plugin tasks
+  include_tasks: network_plugin.yml
+  when: inventory_hostname == groups.masters[0]
+

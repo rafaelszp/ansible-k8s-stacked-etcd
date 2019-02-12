@@ -1,0 +1,22 @@
+---
+# tasks file for k8s
+- name: Prepare centos
+  import_tasks: pre-centos.yml
+    
+- name: Installing kubeadm
+  package:
+    name: 
+      - kubeadm-{{KUBERNETES_VERSION}}
+      - kubelet-{{KUBERNETES_VERSION}}
+      - kubectl-{{KUBERNETES_VERSION}}
+    state: present
+
+- name: Reload systemd unit if args were changed.
+  systemd:
+    daemon_reload: true
+
+- name: Restart Kubelet
+  service: 
+    name: kubelet
+    state: restarted
+    enabled: yes

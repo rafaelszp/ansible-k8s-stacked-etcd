@@ -8,5 +8,3 @@ EXTRA_CERT_SANS:
   - "{{ ansible_nodename }}"
   - "{{ ansible_host }}"
 
-KUBERNETES_VERSION: "1.13.3"
-KUBERNETES_YUM_ARCH: x86_64

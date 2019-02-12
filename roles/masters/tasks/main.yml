@@ -3,9 +3,12 @@
 
 - name: check node is already in cluster
   delegate_to: "{{ groups.masters[0] }}"
-  command: "kubectl get nodes -n kube-system --kubeconfig /etc/kubernetes/admin.conf -o name"
+  shell: > 
+    kubectl get nodes -n kube-system --kubeconfig /etc/kubernetes/admin.conf -o name  
+    || echo not_in_cluster 
   register: get_node_register
   changed_when: false
+  
 
 - name: Install master
   include: install.yml
