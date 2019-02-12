@@ -1,18 +1,17 @@
 ---
 # tasks file for masters
 
-- name: check node is already in cluster
+- name: Check if kubernetes is configured properly
   delegate_to: "{{ groups.masters[0] }}"
-  shell: > 
-    kubectl get nodes -n kube-system --kubeconfig /etc/kubernetes/admin.conf -o name  
-    || echo not_in_cluster 
-  register: get_node_register
-  changed_when: false
-  
+  command:
+    kubectl cluster-info
+  register: cluster_info
+  changed_when: "'is running at' not in cluster_info.stdout"
+  ignore_errors: true
 
 - name: Install master
   include: install.yml
-  when: ( 'node/' + ansible_nodename ) not in get_node_register.stdout_lines
+  when: cluster_info is failed
 
 - name: include master ha tasks
   include: ha.yml

@@ -8,3 +8,5 @@ apiServer:
   - "{{san}}"
   {%endfor%}
 controlPlaneEndpoint: "{{LOAD_BALANCER_DNS}}:{{LOAD_BALANCER_PORT}}"
+networking:
+      dnsDomain: cluster.local

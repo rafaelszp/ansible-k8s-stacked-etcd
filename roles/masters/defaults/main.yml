@@ -7,4 +7,3 @@ EXTRA_CERT_SANS:
   - "{{ ansible_hostname }}"
   - "{{ ansible_nodename }}"
   - "{{ ansible_host }}"
-

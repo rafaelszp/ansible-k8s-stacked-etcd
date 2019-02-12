@@ -3,13 +3,14 @@
   become: true
   become_user: root
   roles:
-# - geerlingguy.docker
+    # - geerlingguy.docker
+    - k8s
     - masters
 
 - hosts: workers
   become: true
   become_user: root
   roles:
-    # - geerlingguy.docker
+    - geerlingguy.docker
     - k8s
     - workers

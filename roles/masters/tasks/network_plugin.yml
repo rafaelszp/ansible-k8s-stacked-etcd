@@ -1,4 +1,10 @@
 ---
-- name: "Deploy WEAVE CNI network plugin"
-  command: >
+- name: "Check if Weave Net is installed"
+  shell: 
+    kubectl -n kube-system get pod
+  register: check_network
+  changed_when: "'weave-net' not in check_network.stdout"
+  
+- name: "Deploy WEAVE NET network plugin"
+  shell:
     kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"

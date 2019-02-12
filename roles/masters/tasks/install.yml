@@ -3,12 +3,7 @@
   file:
     path: /etc/kubernetes/kubeadm
     state: directory
-
-- name: Setup cgroups
-  copy:
-    src: 10-kubeadm.conf
-    dest: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-  
+ 
 - name: Setup kubeadm-config.yaml
   template:
     src: kubedm-config.yaml.j2
@@ -16,7 +11,7 @@
 
 - name: Initializing kubernetes cluster with kubeadm init
   command: kubeadm init --config=/etc/kubernetes/kubeadm/kubeadm-config.yaml
-
+    
 - name: Reload systemd unit if args were changed.
   systemd:
     daemon_reload: true
