@@ -17,5 +17,7 @@
   include: ha.yml
   when: ( groups.masters | length > 1 ) and inventory_hostname != groups.masters[0]
 
+- name: Include helm task
+  include: helm.yml
 
 

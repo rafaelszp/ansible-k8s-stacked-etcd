@@ -1,0 +1,23 @@
+---
+- name: Install helm
+  import_role:
+    name: andrewrothstein.kubernetes-helm
+
+- name: Helm symlinking
+  file:
+    src: /usr/local/bin/helm
+    dest: /usr/bin/helm
+    state: link
+
+- name: Check if tiller is configured
+  command: kubectl -n kube-system get pod
+  register: check_tiller
+  changed_when: false
+
+- name: Helm setup
+  shell: |
+    helm init
+    kubectl -n kube-system create serviceaccount tiller
+    kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
+    helm init --service-account=tiller --upgrade
+  when: " 'tiller' not in check_tiller.stdout"
