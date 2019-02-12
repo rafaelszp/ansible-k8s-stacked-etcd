@@ -14,6 +14,8 @@
   register: check_tiller
   changed_when: false
 
+- debug: var=check_tiller
+
 - name: Helm setup
   shell: |
     helm init

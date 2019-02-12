@@ -9,4 +9,14 @@ apiServer:
   {%endfor%}
 controlPlaneEndpoint: "{{LOAD_BALANCER_DNS}}:{{LOAD_BALANCER_PORT}}"
 networking:
-      dnsDomain: cluster.local
+  dnsDomain: "{{CLUSTER_DOMAIN}}"
+  podSubnet: ""
+
+---
+apiVersion: kubeadm.k8s.io/v1beta1
+kind: InitConfiguration
+localAPIEndpoint:
+  advertiseAddress: "{{ansible_host}}"
+  bindPort: 6443
+
+

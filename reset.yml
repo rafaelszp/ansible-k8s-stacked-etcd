@@ -1,0 +1,28 @@
+---
+- hosts: masters
+  become: true
+  become_user: root
+  tasks:
+    - debug:
+        msg: "{{ansible_host}}"
+    - name: reset helm
+      shell: |
+        kubectl -n kube-system delete deployment tiller-deploy
+        kubectl delete clusterrolebinding tiller
+        kubectl -n kube-system delete serviceaccount tiller
+      failed_when: false
+- hosts: k8s
+  become: true
+  become_user: root
+  tasks:
+    - debug:
+        msg: "{{ansible_host}}"
+    - name: reset kubeadm
+      shell: |
+        kubeadm reset -f && swapoff -a
+        rm -rfv /etc/kubernetes /root/.kube /var/etcd
+      register: result
+      ignore_errors: true
+      failed_when: false
+    - debug: var=result.stdout_lines
+    
