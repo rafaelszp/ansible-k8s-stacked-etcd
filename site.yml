@@ -1,9 +1,24 @@
 ---
+
+# - hosts: k8s
+#   become: true
+#   become_user: root
+#   tasks:
+#     - name: 'check if docker is installed'
+#       command: docker version
+#       ignore_errors: true
+#       register: check_docker
+#       changed_when: false
+#     - name: 'Importing role'
+#       import_role:
+#         name: geerlingguy.docker
+#       when: "check_docker is failed"
+      
+
 - hosts: masters
   become: true
   become_user: root
   roles:
-    # - geerlingguy.docker
     - k8s
     - masters
 
