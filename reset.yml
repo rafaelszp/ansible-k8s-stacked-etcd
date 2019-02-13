@@ -19,6 +19,8 @@
         msg: "{{ansible_host}}"
     - name: reset kubeadm
       shell: |
+        kubectl drain {{ansible_hostname}} --delete-local-data --force --ignore-daemonsets
+        kubectl delete node {{ansible_hostname}} 
         kubeadm reset -f && swapoff -a
         rm -rfv /etc/kubernetes /root/.kube /var/etcd
       register: result

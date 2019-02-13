@@ -1,7 +1,7 @@
 ---
 # tasks file for workers
 - name: check node is already in cluster
-  # delegate_to: "{{ groups.masters[0] }}"
+  delegate_to: "{{ groups.masters[0] }}"
   command: "kubectl get nodes -n kube-system -o name"
   register: node_registry
   changed_when: false
@@ -22,4 +22,6 @@
   when: ( 'node/' + ansible_nodename ) not in node_registry.stdout_lines
   register: join_output
 
-- debug: var=join_output.stoutlines
+- debug: var=join_output
+
+
