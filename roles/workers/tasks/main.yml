@@ -14,6 +14,7 @@
   delegate_to: "{{ groups.masters[0] }}"
   command: "kubeadm token create --print-join-command"
   register: join_token
+  changed_when: false
 
 - debug: var=join_token.stdout
 
@@ -23,5 +24,21 @@
   register: join_output
 
 - debug: var=join_output
+
+- name: Getting labels
+  delegate_to: "{{groups.masters[0]}}"
+  shell: "kubectl get nodes {{ansible_hostname}} --show-labels"
+  register: get_labels
+  changed_when: false
+
+- debug: msg="{{(get_labels.stdout_lines |join(' '))}}"
+
+- name: Including labels
+  delegate_to: "{{groups.masters[0]}}"
+  shell: kubectl label nodes {{ansible_hostname}} k8s_role_{{item}}={{item}}
+  with_items: "{{k8s_roles}}"
+  when: 
+    - (get_labels.stdout_lines |join(' ')) is not match('.*?k8s_role_.*?')
+  register: include_labels
 
 
