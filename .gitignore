@@ -2,3 +2,5 @@
 .vagrant/
 inventory.hml.ini
 temp/
+test.yml
+.history

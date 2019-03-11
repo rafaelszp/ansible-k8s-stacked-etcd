@@ -1,0 +1,17 @@
+---
+# defaults file for jenkins
+JENKINS_VERSION: "2.167"
+JENKINS_NODEPORT: 32222
+JENKINS_HOME: /dados/jenkins
+JENKINS_PLUGINS:
+  - kubernetes:1.14.8
+  - workflow-aggregator:2.6
+  - credentials-binding:1.16
+  - git:3.9.3
+  - blueocean:1.13.2
+  - timestamper:1.9
+  - greenballs:1.15
+  - cobertura:1.13
+JENKINS_ADMIN_USR: admin
+JENKINS_ADMIN_PWD: l3l4L5
+JENKINS_ADMIN_EMAIL: rafaelsouza@sistemafieg.org.br

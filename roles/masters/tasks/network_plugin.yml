@@ -1,10 +1,11 @@
 ---
-- name: "Check if Flannel network plugin is installed"
+- name: "Check if weave-net network plugin is installed"
   shell: 
     kubectl -n kube-system get pod
   register: check_network
-  changed_when: "'flannel' not in check_network.stdout"
+  changed_when: "'weave-net' not in check_network.stdout"
   
-- name: "Deploy Flannel CNI"
+#    kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/a70459be0084506e4ec919aa1c114638878db11b/Documentation/kube-flannel.yml
+- name: "Deploy Weave CNI"
   shell:
-    kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/a70459be0084506e4ec919aa1c114638878db11b/Documentation/kube-flannel.yml
+    kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"

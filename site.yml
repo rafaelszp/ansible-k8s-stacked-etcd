@@ -12,3 +12,26 @@
   roles:
     - k8s
     - workers
+
+
+# - hosts: k8s
+#   become: true
+#   become_user: root
+#   roles:
+#     - jenkins
+
+- hosts: masters
+  become: true
+  become_user: root
+  tasks:
+    - command: kubectl delete pod busybox 
+      failed_when: false
+      when: (debug=='yes' or debug=='true')
+    - name: installing busybox for debugging
+      shell: 
+        kubectl create -f https://k8s.io/examples/admin/dns/busybox.yaml
+      when: (debug=='yes' or debug=='true')
+    # - name: nslookup
+    #   command: kubectl exec -it busybox -- nslookup kubernetes.default
+    #   register: nslookup
+    # - debug: var=nslookup.stdout_lines 

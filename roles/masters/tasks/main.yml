@@ -37,3 +37,26 @@
   register: include_labels
 
 
+- name: Checking if local-storage StorageClass is Present
+  command: kubectl get sc 
+  register: get_storageclass
+  changed_when: false
+
+- debug: var=get_storageclass.stdout_lines
+  when: get_storageclass.stdout_lines is defined
+
+- name: Copy StorageClass config
+  when: get_storageclass.stdout.find('local-storage') == -1
+  copy: 
+    src: local-storageclass.yml
+    dest: /etc/kubernetes/local-storageclass.yml
+
+- name: Installing local-storageclass
+  when: get_storageclass.stdout.find('local-storage') == -1
+  script: patch-localstorage.sh    
+  register: lcs_out
+
+- debug: var=lcs_out.stdout_lines
+  when: lcs_out.stdout_lines is defined
+
+#lcs_out.stdout_lines

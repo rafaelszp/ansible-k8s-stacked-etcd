@@ -1,0 +1,72 @@
+---
+# tasks file for jenkins
+
+- name: 'Update helm repo'
+  delegate_to: "{{ groups.masters[0] }}"
+  command: helm repo update
+  register: helm_update
+
+- debug: var=helm_update.stdout_lines
+
+
+- name: Ensure jenkins folder exists on first master
+  delegate_to: "{{ groups.masters[0] }}"
+  file:
+    path: /etc/kubernetes/jenkins
+    state: directory
+  when:
+  - inventory_hostname == groups.masters[0]
+
+- name: Ensure jenkins data folder exists devops node
+  delegate_to: "{{ groups.devops[0] }}"
+  file:
+    path: /dados/jenkins
+    state: directory
+  when:
+  - inventory_hostname == groups.devops[0]
+
+- name: Templating jenkins-pvc
+  delegate_to: "{{ groups.masters[0] }}"
+  template: 
+    src: jenkins-pvc.yaml.j2
+    dest: /etc/kubernetes/jenkins/jenkins-pvc.yaml
+    force: yes
+
+- name: Templating jenkins-values.yaml
+  delegate_to: "{{ groups.masters[0] }}"
+  template: 
+    src: jenkins-values.yaml.j2
+    dest: /etc/kubernetes/jenkins/jenkins-values.yaml
+    force: yes
+  
+- name: Checking if jenkins helm chart is already installed
+  delegate_to: "{{ groups.masters[0] }}"
+  command: helm ls --all jenkins
+  register: jenkins_installed
+
+- debug: 
+    msg: "{{jenkins_installed.stdout.find('jenkins')}}"
+
+- name: Installing jenkins chart
+  delegate_to: "{{ groups.masters[0] }}"
+  command: helm install --name jenkins --namespace devops --values /etc/kubernetes/jenkins/jenkins-values.yaml stable/jenkins
+  when: jenkins_installed.stdout.find('jenkins') == -1
+  register: install_jenkins
+  run_once: yes
+
+- debug:
+    var: install_jenkins.stdout_lines
+  when: jenkins_installed.stdout.find('jenkins') == -1
+
+- name: Create jenkins-pvc
+  delegate_to: "{{ groups.masters[0] }}"
+  command: kubectl apply -f /etc/kubernetes/jenkins/jenkins-pvc.yaml
+  run_once: yes
+  register: pvc_created
+
+- debug: var=pvc_created.stdout_lines
+  run_once: yes
+
+
+
+

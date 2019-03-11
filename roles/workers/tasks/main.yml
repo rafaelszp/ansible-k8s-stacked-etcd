@@ -41,4 +41,9 @@
     - (get_labels.stdout_lines |join(' ')) is not match('.*?k8s_role_.*?')
   register: include_labels
 
+- name: Restarting kubelet service
+  service: 
+    name: kubelet
+    state: restarted
+
 
