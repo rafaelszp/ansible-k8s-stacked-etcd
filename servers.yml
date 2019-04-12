@@ -1,5 +1,5 @@
 ---
-- name: k8s-master-01
+- name: k8s-devops-01
   box: centos/7
   cpus: 2
   ram: 2048

@@ -15,7 +15,7 @@
 
 - name: include master ha tasks
   include: ha.yml
-  when: ( groups.masters | length > 1 ) and inventory_hostname != groups.masters[0]
+  when: ( groups.masters | length > 1 ) and inventory_hostname != groups.masters[0]  and cluster_info is failed
 
 - name: Include helm task
   include: helm.yml

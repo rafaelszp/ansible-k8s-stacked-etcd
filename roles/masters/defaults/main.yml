@@ -1,11 +1,6 @@
 ---
 # defaults file for masters
-LOAD_BALANCER_DNS: "cluster.local"
-LOAD_BALANCER_PORT: 443
-
 EXTRA_CERT_SANS:
   - "{{ ansible_hostname }}"
   - "{{ ansible_nodename }}"
   - "{{ ansible_host }}"
-
-CLUSTER_DOMAIN: cluster.local

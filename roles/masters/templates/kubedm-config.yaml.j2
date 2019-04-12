@@ -1,6 +1,7 @@
 apiVersion: kubeadm.k8s.io/v1beta1
 kind: ClusterConfiguration
 kubernetesVersion: stable
+controlPlaneEndpoint: "{{LOAD_BALANCER_DNS}}:{{LOAD_BALANCER_PORT}}"
 apiServer:
   extraArgs:
     advertise-address: "{{ansible_host}}"
@@ -9,7 +10,6 @@ apiServer:
   {% for san in EXTRA_CERT_SANS %}
   - "{{san}}"
   {%endfor%}
-controlPlaneEndpoint: "{{LOAD_BALANCER_DNS}}:{{LOAD_BALANCER_PORT}}"
 controllerManager:
   extraArgs:
     bind-address: 0.0.0.0

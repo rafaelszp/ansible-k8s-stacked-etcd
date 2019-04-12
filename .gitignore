@@ -3,4 +3,5 @@
 inventory.hml.ini
 temp/
 test.yml
-.history
+inventory.pre.ini
+.history/

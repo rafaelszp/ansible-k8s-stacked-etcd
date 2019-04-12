@@ -11,6 +11,26 @@
     name: geerlingguy.docker
   when: "check_docker is failed"
 
+- name: 'changing docker from cgroups to systemd'
+  shell: |
+    cat > /etc/docker/daemon.json <<EOF
+    {
+      "exec-opts": ["native.cgroupdriver=systemd"],
+      "log-driver": "json-file",
+      "log-opts": {
+        "max-size": "100m"
+      },
+      "storage-driver": "overlay2",
+      "storage-opts": [
+        "overlay2.override_kernel_check=true"
+      ]
+    }
+    EOF
+
+- name: Reload systemd unit if args were changed.
+  systemd:
+    daemon_reload: true
+
 - name: Prepare centos
   import_tasks: pre-centos.yml
     
@@ -50,6 +70,14 @@
   lineinfile:
     path: /etc/bashrc
     line: "alias kcs='kubectl -n kube-system'"
+    state: present
+    insertafter: EOF
+    create: yes
+
+- name: Creating kubectl config set-context $(kubectl config current-context) --namespace alias
+  lineinfile:
+    path: /etc/bashrc
+    line: "alias chns='kubectl config set-context $(kubectl config current-context) --namespace '"
     state: present
     insertafter: EOF
     create: yes

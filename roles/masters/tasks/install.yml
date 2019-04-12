@@ -3,16 +3,24 @@
   file:
     path: /etc/kubernetes/kubeadm
     state: directory
- 
+
+- name: Ensure directory exists in all masters
+  file:
+    path: /etc/kubernetes/pki/etcd
+    state: directory
+   
 - name: Setup kubeadm-config.yaml
   template:
     src: kubedm-config.yaml.j2
     dest: /etc/kubernetes/kubeadm/kubeadm-config.yaml
+  when:
+  - inventory_hostname == groups.masters[0]
 
 - name: Initializing kubernetes cluster with kubeadm init
-# "kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address={{ansible_host}}"
   command: 
-    kubeadm init --config=/etc/kubernetes/kubeadm/kubeadm-config.yaml   
+    kubeadm init --config=/etc/kubernetes/kubeadm/kubeadm-config.yaml #--experimental-upload-certs
+  when:
+    - inventory_hostname == groups.masters[0]
     
 - name: Reload systemd unit if args were changed.
   systemd:
