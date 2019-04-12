@@ -38,3 +38,11 @@
 - name: join master node into cluster
   command: "{{ join_command_register.stdout }} --experimental-control-plane"
   when: ( 'node/' + ansible_nodename ) not in get_node_register.stdout_lines
+  register: join_node
+
+- name: ensure kube config exists on first master
+  copy:
+    src: "/etc/kubernetes/admin.conf"
+    dest: /root/.kube/config
+    remote_src: yes
+  when: join_node is succeeded

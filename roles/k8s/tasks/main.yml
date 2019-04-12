@@ -26,6 +26,7 @@
       ]
     }
     EOF
+  when: "check_docker is failed"
 
 - name: Reload systemd unit if args were changed.
   systemd:
@@ -44,11 +45,15 @@
       - vim
     state: present
 
+- name: 'Setting fact only if not in masters'
+  set_fact:
+    cgroups_var: "{{ (inventory_hostname not in groups['masters'] and \"--cgroup-driver=systemd\") or '' }}"
+
 - name: ensure kubelet env KUBELET_EXTRA_ARGS is set
   lineinfile:
     path: '/etc/sysconfig/kubelet'
     regexp: '^KUBELET_EXTRA_ARGS.*'
-    line: 'KUBELET_EXTRA_ARGS="--node-ip={{ ansible_host | default(ansible_default_ipv4.address) }}"'
+    line: 'KUBELET_EXTRA_ARGS="--node-ip={{ ansible_host | default(ansible_default_ipv4.address) }} {{cgroups_var}}"'
   register: kubernetes_systemd_register
 
 - debug: var=kubernetes_systemd_register
