@@ -18,8 +18,8 @@
 
 - name: Helm setup
   shell: |
-    helm init
+    helm init --node-selectors k8s_role_devops=devops
     kubectl -n kube-system create serviceaccount tiller
     kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
-    helm init --service-account=tiller --upgrade
+    helm init --service-account=tiller  --node-selectors k8s_role_devops=devops --upgrade
   when: " 'tiller' not in check_tiller.stdout"

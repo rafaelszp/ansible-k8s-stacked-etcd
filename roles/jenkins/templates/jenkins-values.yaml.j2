@@ -8,6 +8,11 @@ Master:
   AdminUser: {{JENKINS_ADMIN_USR}}
   AdminPassword: {{JENKINS_ADMIN_PWD}}
   JenkinsAdminEmail: {{JENKINS_ADMIN_EMAIL}}
+  NodeSelector:
+
+    {% for nodesel in NODE_SELECTORS %}
+      {{nodesel}}
+    {% endfor %}
 
   InstallPlugins:
     

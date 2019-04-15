@@ -47,6 +47,13 @@
 - debug: 
     msg: "{{jenkins_installed.stdout.find('jenkins')}}"
 
+- command: cat /etc/kubernetes/jenkins/jenkins-values.yaml
+  register: jenkins_values
+  failed_when: false
+
+- debug: var=jenkins_values.stdout_lines
+  failed_when: false
+
 - name: Installing jenkins chart
   delegate_to: "{{ groups.masters[0] }}"
   command: helm install --name jenkins --namespace devops --values /etc/kubernetes/jenkins/jenkins-values.yaml stable/jenkins

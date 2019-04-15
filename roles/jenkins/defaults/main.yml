@@ -1,6 +1,7 @@
 ---
 # defaults file for jenkins
-JENKINS_VERSION: "2.168"
+#JENKINS_VERSION: "2.168"
+JENKINS_VERSION: "2.173"
 JENKINS_NODEPORT: 32222
 JENKINS_HOME: /dados/jenkins
 JENKINS_PLUGINS:
@@ -14,4 +15,6 @@ JENKINS_PLUGINS:
   - cobertura:1.13
 JENKINS_ADMIN_USR: admin
 JENKINS_ADMIN_PWD: l3l4LL
-JENKINS_ADMIN_EMAIL: rafaelsouza@sistemafieg.org.br
+JENKINS_ADMIN_EMAIL: rafaelszp@users.noreply.github.com
+NODE_SELECTORS:
+  - k8s_role_devops: devops
