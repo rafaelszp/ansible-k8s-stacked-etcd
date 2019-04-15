@@ -21,6 +21,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       srv.vm.box = server["box"]
       srv.vm.hostname = server["name"]
       srv.vm.network "private_network", ip: server["ip"]
+      srv.vm.network "public_network" # a public dhcped network intented to connect with another vms in another cluster
       srv.vm.provider :virtualbox do |vb|
         vb.name = server["name"]
         vb.memory = server["ram"]

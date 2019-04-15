@@ -45,15 +45,36 @@
       - vim
     state: present
 
-- name: 'Setting fact only if not in masters'
-  set_fact:
-    cgroups_var: "{{ (inventory_hostname not in groups['masters'] and \"--cgroup-driver=systemd\") or '' }}"
+# - name: 'Setting fact only if not in masters'
+#   set_fact:
+#     cgroups_var: "{{ (inventory_hostname not in groups['masters'] and \"--cgroup-driver=systemd\") or '' }}"
+
+- name: Listing groups will have config.yaml
+  set_fact: 
+    nodes_list: "{{ groups.workers + groups.devops }}"
+
+- debug: var=nodes_list
+
+# - name: Creating /var/lib/kubelet 
+#   delegate_to: "{{item}}"
+#   file:
+#     path: /var/lib/kubelet
+#     state: directory
+#   with_items: "{{nodes_list}}"
+
+# - name: Setting cgroup driver for non-masters
+#   delegate_to: "{{item}}"
+#   template: 
+#     src: config.yaml
+#     dest: /var/lib/kubelet/config.yaml
+#     force: yes
+#   with_items: "{{nodes_list}}"
 
 - name: ensure kubelet env KUBELET_EXTRA_ARGS is set
   lineinfile:
     path: '/etc/sysconfig/kubelet'
     regexp: '^KUBELET_EXTRA_ARGS.*'
-    line: 'KUBELET_EXTRA_ARGS="--node-ip={{ ansible_host | default(ansible_default_ipv4.address) }} {{cgroups_var}}"'
+    line: 'KUBELET_EXTRA_ARGS="--node-ip={{ ansible_host | default(ansible_default_ipv4.address) }}"'
   register: kubernetes_systemd_register
 
 - debug: var=kubernetes_systemd_register

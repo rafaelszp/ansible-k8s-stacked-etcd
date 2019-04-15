@@ -1,0 +1,7 @@
+---
+- hosts: devops
+  become: true
+  become_user: root
+  roles:
+    - k8s
+    - workers
