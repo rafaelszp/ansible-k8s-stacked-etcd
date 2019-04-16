@@ -3,7 +3,7 @@
 #JENKINS_VERSION: "2.168"
 JENKINS_VERSION: "2.173"
 JENKINS_NODEPORT: 32222
-JENKINS_HOME: /dados/jenkins
+JENKINS_HOME: "{{NFS_MOUNTPOINT}}/jenkins"
 JENKINS_PLUGINS:
   - kubernetes:1.14.8
   - workflow-aggregator:2.6

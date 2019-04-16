@@ -31,6 +31,8 @@
     src: jenkins-pvc.yaml.j2
     dest: /etc/kubernetes/jenkins/jenkins-pvc.yaml
     force: yes
+  vars:
+    nfs_mountpoint: "{{NFS_MOUNTPOINT}}"
 
 - name: Templating jenkins-values.yaml
   delegate_to: "{{ groups.masters[0] }}"
@@ -64,6 +66,13 @@
 - debug:
     var: install_jenkins.stdout_lines
   when: jenkins_installed.stdout.find('jenkins') == -1
+
+- name: "Ensure {{NFS_MOUNTPOINT}} exists in {{item}}"
+  delegate_to: "{{item}}"
+  file: 
+    path: "{{NFS_MOUNTPOINT}}"
+    state: directory
+  with_items: "{{groups.devops}}"
 
 - name: Create jenkins-pvc
   delegate_to: "{{ groups.masters[0] }}"

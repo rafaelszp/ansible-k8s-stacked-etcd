@@ -1,3 +1,4 @@
 ---
 docker_edition: 'ce'
 docker_package: "docker-{{ docker_edition }}-18.06.3.ce-3.el7.x86_64"
+NFS_MOUNTPOINT: /dados/k8s
