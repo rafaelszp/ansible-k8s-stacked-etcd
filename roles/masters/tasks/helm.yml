@@ -9,17 +9,20 @@
     dest: /usr/bin/helm
     state: link
 
-- name: Check if tiller is configured
-  command: kubectl -n kube-system get pod
-  register: check_tiller
-  changed_when: false
+# - name: Check if tiller is configured
+#   command: kubectl -n kube-system get pod
+#   register: check_tiller
+#   changed_when: false
 
 - debug: var=check_tiller
 
+    #helm init --node-selectors k8s_role_devops=devops
+    #kubectl -n kube-system create serviceaccount tiller
+    #kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
+    #helm init --service-account=tiller  --node-selectors k8s_role_devops=devops --upgrade
+    
 - name: Helm setup
   shell: |
-    helm init --node-selectors k8s_role_devops=devops
-    kubectl -n kube-system create serviceaccount tiller
-    kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
-    helm init --service-account=tiller  --node-selectors k8s_role_devops=devops --upgrade
-  when: " 'tiller' not in check_tiller.stdout"
+    helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+    helm repo update
+  #when: " 'tiller' not in check_tiller.stdout"

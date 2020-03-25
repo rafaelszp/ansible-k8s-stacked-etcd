@@ -26,5 +26,4 @@
       register: result
       ignore_errors: true
       failed_when: false
-    - debug: var=result.stdout_lines
-    
+    - debug: var=result.stdout_lines    

@@ -1,0 +1,13 @@
+---
+- hosts: masters
+  become: true
+  become_user: root
+  roles:
+    - k8s
+    - masters
+
+# - hosts: workers:devops
+#   become: true
+#   become_user: root
+#   roles:
+#     - k8s

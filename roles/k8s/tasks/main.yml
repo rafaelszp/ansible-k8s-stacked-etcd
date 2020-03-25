@@ -32,6 +32,11 @@
   systemd:
     daemon_reload: true
 
+- name: 'Restarting docker'
+  service:
+    name: docker
+    state: restarted
+
 - name: Prepare centos
   import_tasks: pre-centos.yml
     
