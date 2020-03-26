@@ -1,0 +1,33 @@
+---
+- name: Checking if Linkerd is installed
+  stat: 
+    path: /usr/local/bin/linkerd
+  register: stat_linkerd
+
+- name: Installing Linkerd
+  block:
+  ###BEGIN
+    - name: Downloading Linkerd
+      shell: |
+        curl -sL https://run.linkerd.io/install | sh
+        cp .linkerd2/bin/linkerd /usr/local/bin/
+
+    - name: Deploying Linkerd on K8s
+      shell: linkerd install | kubectl apply -f -
+
+    - name: Ensure /etc/linkerd is created
+      file:
+        path: /etc/linkerd
+        state: directory
+
+    - name: Templating linkerd-dash
+      template: 
+        src: linkerd-dashboard.yml
+        dest: /etc/linkerd-dashboard.yml
+        force: yes
+
+    - name: Exposing dashboard
+      shell: kubectl apply -f /etc/linkerd-dashboard.yml
+
+    ###END  
+  when: stat_linkerd.stat.exists == False

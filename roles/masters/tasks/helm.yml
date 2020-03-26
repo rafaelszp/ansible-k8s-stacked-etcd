@@ -26,3 +26,9 @@
     helm repo add stable https://kubernetes-charts.storage.googleapis.com/
     helm repo update
   #when: " 'tiller' not in check_tiller.stdout"
+
+- name: Installing nginx-ingress
+  shell: |
+    kubectl create ns ingress-nginx
+    helm upgrade -i nginx-ingress stable/nginx-ingress --namespace ingress-nginx
+    
