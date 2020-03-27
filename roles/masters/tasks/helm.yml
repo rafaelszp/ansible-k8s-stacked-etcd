@@ -30,5 +30,5 @@
 - name: Installing nginx-ingress
   shell: |
     kubectl create ns ingress-nginx
-    helm upgrade -i nginx-ingress stable/nginx-ingress --namespace ingress-nginx
+    helm upgrade -i nginx-ingress stable/nginx-ingress --namespace ingress-nginx --set controller.publishService.enabled=true
     

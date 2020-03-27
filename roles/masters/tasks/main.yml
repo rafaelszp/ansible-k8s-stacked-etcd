@@ -20,7 +20,8 @@
 - name: Include helm task
   include: helm.yml
 
-- include: linkerd.yml
+- name: Include linkerd
+  include: linkerd.yml
 
 - name: Getting labels
   delegate_to: "{{groups.masters[0]}}"

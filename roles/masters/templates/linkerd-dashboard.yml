@@ -10,7 +10,7 @@ data:
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: web-ingress
+  name: linkerd-ingress
   namespace: linkerd
   annotations:
     kubernetes.io/ingress.class: "nginx"
@@ -24,7 +24,7 @@ metadata:
     nginx.ingress.kubernetes.io/auth-realm: "Authentication Required"
 spec:
   rules:
-  - host: dashboard.fieg.com.br
+  - host: smesh.fieg.com.br
     http:
       paths:
       - backend:
