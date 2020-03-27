@@ -1,0 +1,53 @@
+---
+- hosts: k8s
+  become: true
+  become_user: root
+  vars:
+    mylist: ['not result', 'role_master', 'role_worker']
+    url: "http://example.com/users/foo/resources/bar"
+  tasks:
+
+    - name: Creating bash-completion config
+      lineinfile:
+        path: /root/.bashrc
+        state: present
+        insertafter: EOF
+        create: yes
+        line: "source <(kubectl completion bash)"
+    # - name: Roles setup
+    #   debug:
+    #     msg: "{{mylist | join(' ')}}"
+    #   when: (mylist | join(' ')) is match('.*?[item].*?')
+    #   with_items: 
+    #     - worker
+
+    # - name: Getting labels
+    #   delegate_to: "{{groups.masters[0]}}"
+    #   shell: "kubectl get nodes {{ansible_hostname}} --show-labels"
+    #   register: get_labels
+    #   changed_when: false
+
+    # - debug: msg="{{(get_labels.stdout_lines |join(' '))}}"
+
+    # - name: Including labels
+    #   delegate_to: "{{groups.masters[0]}}"
+    #   shell: kubectl label nodes {{ansible_hostname}} k8s_role_{{item}}={{item}}
+    #   with_items: "{{k8s_roles}}"
+    #   when: 
+    #     - (get_labels.stdout_lines |join(' ')) is not match('.*?k8s_role_.*?')
+    #   register: include_labels
+
+    # - debug: 
+    #     msg: "{{item.stdout_lines}}"
+    #   with_items: "{{include_labels.results}}"
+    #   when: item.changed
+
+
+
+
+
+
+      
+
+      #when: ( 'node/' + ansible_nodename ) not in node_registry.stdout_lines
+

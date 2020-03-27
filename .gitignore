@@ -1,7 +1,6 @@
 *.retry
 .vagrant/
 inventory.hml.ini
-temp/
 test.yml
 inventory.pre.ini
 .history/
