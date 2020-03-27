@@ -3,7 +3,7 @@
 cmd='tail'
 for i in {1..60};
 do
-        kubectl delete pod $(kubectl get pod | awk '{print $1}' |grep -v NAME | $cmd -n3);
+        kubectl delete pod $(kubectl get pod | awk '{print $1}' |grep -v NAME | $cmd -n4);
         if [ "$cmd" = "tail" ]
         then
           cmd='head'

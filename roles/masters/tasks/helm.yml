@@ -27,8 +27,13 @@
     helm repo update
   #when: " 'tiller' not in check_tiller.stdout"
 
+- name: Checking nginx-ingress
+  shell: kubectl get ns ingress-nginx || echo 'not found'
+  register: ingress_check
+
 - name: Installing nginx-ingress
   shell: |
     kubectl create ns ingress-nginx
     helm upgrade -i nginx-ingress stable/nginx-ingress --namespace ingress-nginx --set controller.publishService.enabled=true
+  when: '"not found" in ingress_check.stdout'
     

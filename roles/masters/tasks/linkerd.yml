@@ -1,6 +1,6 @@
 ---
 - name: Checking linkerd
-  shell:  /usr/local/bin/linkerd check
+  shell:  /usr/local/bin/linkerd check || echo "Status check results are ×"
   failed_when: False
   register: check_linkerd
 
@@ -36,5 +36,5 @@
 
     ###END  
   any_errors_fatal: true
-  # when: 
-  #   - '"Status check results are ×" in check_linkerd.stdout'
+  when: 
+    - '"Status check results are ×" in check_linkerd.stdout'
