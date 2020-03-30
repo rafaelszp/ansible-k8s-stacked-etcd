@@ -39,3 +39,61 @@ spec:
     - protocol: TCP
       port: 80
       nodePort: 32080
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: loadgen
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: loadgen
+  name: loadgen
+data:
+  load-gen.sh: |
+      #!/bin/sh
+      echo  generating load
+      load=1
+      while [ "$load" = 1 ]
+      do
+          wget 'http://nginx-svc.default.svc.cluster.local' -q -O /dev/null || echo 'Error'
+      done;
+
+---
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  namespace: loadgen
+  name: loadgen
+  annotations:
+    linkerd.io/inject: enabled
+spec:
+  selector:
+    matchLabels:
+      app: loadgen
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1 #numero maximo acima do numero de replicas 
+      maxUnavailable: 1 #numero maximo indisponivel
+  template:
+    metadata:
+      labels:
+        app: loadgen
+    spec:
+      containers:
+      - name: loadgen
+        image: busybox
+        command: ["/scripts/load-gen.sh"]
+        volumeMounts:
+          - mountPath: /scripts
+            name: loadgen-sh
+      volumes:
+        - name: loadgen-sh
+          configMap:
+            name: loadgen
+            defaultMode: 0744

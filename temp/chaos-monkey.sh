@@ -10,5 +10,5 @@ do
         else
           cmd='tail'
         fi
-        sleep 30;
+        sleep 60;
 done;
