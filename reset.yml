@@ -10,7 +10,7 @@
         kubectl -n kube-system delete deployment tiller-deploy
         kubectl delete clusterrolebinding tiller
         kubectl -n kube-system delete serviceaccount tiller
-nohup rm /usr/local/bin/linkerd /root/.linkerd2 -rf
+#nohup rm /usr/local/bin/linkerd /root/.linkerd2 -rf
       failed_when: false
 - hosts: k8s
   become: true

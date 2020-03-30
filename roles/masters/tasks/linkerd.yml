@@ -17,17 +17,38 @@
 - name: Configuring Linkerd
   block:
   ###BEGIN
-    - name: Deploying Linkerd on K8s
-      shell: /usr/local/bin/linkerd install | kubectl apply -f -
 
     - name: Ensure /etc/linkerd is created
       file:
-        path: /etc/linkerd
+        path: "/etc/linkerd/{{item}}"
         state: directory
+      with_items: 
+        - base
+        - overlays/prod
+    
+    - name: Kustomizing Linkerd - Base
+      template: 
+        src: linkerd/kustomize_linkerd_base.yml
+        dest: /etc/linkerd/base/kustomization.yaml
+
+    - name: Kustomizing Linkerd - Prod
+      template: 
+        src: linkerd/kustomize_linkerd_prod.yml
+        dest: /etc/linkerd/overlays/prod/kustomization.yaml
+    
+    - name: Kustomizing Linkerd - Patch
+      template: 
+        src: linkerd/linkerd_deploy_patch.yaml
+        dest: /etc/linkerd/overlays/prod/deploy_patch.yaml      
+
+    - name: Deploying Linkerd on K8s
+      shell: |
+        /usr/local/bin/linkerd install > /etc/linkerd/base/linkerd.yaml
+        kubectl apply -k /etc/linkerd/overlays/prod
 
     - name: Templating linkerd-dash
       template: 
-        src: linkerd-dashboard.yml
+        src: linkerd/linkerd-dashboard.yml
         dest: /etc/linkerd-dashboard.yml
         force: yes
 
